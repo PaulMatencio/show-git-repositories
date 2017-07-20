@@ -1,0 +1,58 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <title>Show github repos</title>
+  <!--
+    Custom Elements and Shadow DOM are part of a set of web standards
+    called Web Components. On browsers that don't natively support Web Components,
+    you'll need to load a polyfill
+  -->
+  <custon-style>
+    <!--style is="custom-style" include="work-pages-shared-styles">
+    </style-->
+    <style>
+    /* Define a document-wide default—will not override a :host rule in  */
+      html {
+        --iron-icon-stroke-color: black;
+        --icon-toggle-outline-color: black;
+      }
+      /* Override the value specified in demo-element */
+      show-git-repositories {
+          --iron-icon-fill-color: blue;
+          --iron-icon-stroke-color: blue;
+          --iron-icon-height: 24px;
+          --iron-icon-width: 24px;
+          --icon-toggle-pressed-color: blue;
+          --icon-toggle-color: gray;
+
+      }
+        /* This rule will apply to the body of this html! */
+      body {
+          --iron-icon-fill-color: blue;
+          --iron-icon-stroke-color: blue;
+          --iron-icon-height: 36px;
+          --iron-icon-width: 36px;
+          --icon-toggle-color: red;
+      }
+    </style>
+  </custom-style>
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="show-git-repositories.html">
+</head>
+<body>
+  <show-git-repositories> user="PaulMatencio"</show-git-repositories>
+  <script>
+  </script>
+</body>
+</html>

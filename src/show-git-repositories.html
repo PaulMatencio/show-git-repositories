@@ -1,0 +1,91 @@
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="icon-toggle.html">
+<dom-module id="show-git-repositories">
+    <template>
+        <!-- Styles MUST be inside template -->
+      <style>
+        :host {
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bold  {
+            font-size: 30px;
+            font-weight: bold;
+            color: blue;
+            margin-bottom: 0 0 30px 0;
+
+        }
+        
+        p {
+            font-size: 20px;
+            margin: 0 0 2px 20px;
+            color: grey;
+            display: inline-flex;
+        }
+      </style>
+
+      <p class= "bold"> [[user]] Github repositories: </p></br>
+          <template is="dom-repeat" items="[[repos]]">
+              <icon-toggle  toggle-icon="star" on-tap="click"></icon-toggle>
+              <p>{{item.name}}</p></br>
+          </template>
+        <!-- url="https://api.github.com/users/burczu/repos" -->
+      <iron-ajax
+            id="requestRepos"
+            url="[[url]]"
+            params='{"type":"all"}'
+            handle-as="json"
+            on-response="handleResponse">
+      </iron-ajax>
+    </template>
+
+    <script>
+    class ShowGitRepositories extends Polymer.Element {
+        static get is()  { return 'show-git-repositories' }
+        static get properties() {
+          return {
+            repos: {
+              type: Array
+            },
+            user: {
+              type: String,
+              value: "PaulMatencio",
+              notify: true,
+              reflectToAttribute: true
+            },
+
+            url: {
+              type: String,
+              value: function() {
+                return ("https://api.github.com/users/" + this.user + "/repos")
+              },
+              notify: true,
+              reflectToAttribute: true
+            }
+          }
+        }
+        constructor() {
+          super();
+        }
+        ready() {
+          super.ready();
+          console.log(this.user) ;
+          this.$.requestRepos.generateRequest();
+        }
+
+        handleResponse(data)  {
+            this.repos = data.detail.response;
+        }
+
+        click() {
+           console.log(this.$);
+        }
+      }
+
+      // Register custom element definition using standard platform API
+      customElements.define(ShowGitRepositories.is, ShowGitRepositories);
+    </script>
+
+</dom-module>
