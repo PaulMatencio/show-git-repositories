@@ -1,43 +1,89 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="icon-toggle.html">
+<link rel="import" href="shared-styles.html">
+
 <dom-module id="show-git-repositories">
     <template>
         <!-- Styles MUST be inside template -->
-      <style>
+      <style include="shared-styles">
         :host {
             display: block;
-            position: relative;
-            overflow: hidden;
+            padding : 10px;
         }
 
         .bold  {
-            font-size: 30px;
-            font-weight: bold;
-            color: blue;
-            margin-bottom: 0 0 30px 0;
-
-        }
-        
-        p {
             font-size: 20px;
-            margin: 0 0 2px 20px;
+            font-weight: bold;
             color: grey;
-            display: inline-flex;
+            margin-bottom: 0 0 30px 0;
+            display: block;
         }
+
+        input[type=text] {
+          width: 40%;
+          padding: 12px 15px;
+          margin: 8px 0;
+          font-size: 24px;
+          box-sizing: border-box;
+          border-width: 3px;
+        }
+
+        p  {
+          font-size: 16px;
+          margin-bottom: 5px;
+          margin-top: 5px;
+        }
+        .strong {
+          font-weight: bold;
+        }
+        .right {
+          padding-left: 30px;
+        }
+
       </style>
 
-      <p class= "bold"> [[user]] Github repositories: </p></br>
-          <template is="dom-repeat" items="[[repos]]">
-              <icon-toggle  toggle-icon="star" on-tap="click"></icon-toggle>
-              <p>{{item.name}}</p></br>
-          </template>
+      <dom-bind>
+        <iron-input  id="input1" bind-value="{{user}}">
+          <input type="text" value="{{user::input}}">
+        </iron-input>
+        <iron-icon icon="search" on-click="_fire" ></iron-icon>
+        <p class= "bold"> Total number of [[user]] 's Github repositories: [[numberRepos]]</p>
+      </dom-bind>
+
+      <template is="dom-repeat" items="[[repos]]">
+          <div  class="card">
+               <p class="strong"> Name: {{item.name}} </p>
+               <p class="right"> Description: {{item.description}} </p>
+               <p class="right"><i> Url: {{item.git_url}}</i> </p>
+               <p class="right"> Created at: {{item.created_at}}   </p>
+          </div>
+      </template>
+
+
         <!-- url="https://api.github.com/users/burczu/repos" -->
+        <!--
+        If verbode true, error messages will automatically
+        be logged to the console.
+
+
+        With auto set to true, the element performs a request whenever its url,
+        params or body properties are changed.
+
+        headers='{"X-Requested-With": "XMLHttpRequest"}'
+        on-response="_handleResponse"
+        last-response= {{ajaxResponse}}
+        -->
       <iron-ajax
+            verbose
             id="requestRepos"
             url="[[url]]"
             params='{"type":"all"}'
             handle-as="json"
-            on-response="handleResponse">
+            on-response="_handleResponse"
+            lastError = "{{lastError}}"
+            on-error = "_handleError"
+            iron-ajax-error = "_handleError"
+            debounce-duration="300">
       </iron-ajax>
     </template>
 
@@ -47,13 +93,17 @@
         static get properties() {
           return {
             repos: {
-              type: Array
+              type: Array,
+              value: [],
+              reflectToAttribute: true
             },
+
             user: {
               type: String,
               value: "PaulMatencio",
               notify: true,
-              reflectToAttribute: true
+              reflectToAttribute: true,
+              observer: "_notify"
             },
 
             url: {
@@ -61,26 +111,55 @@
               value: function() {
                 return ("https://api.github.com/users/" + this.user + "/repos")
               },
-              notify: true,
+              reflectToAttribute: true
+            },
+
+            numberRepos: {
+              type: Number,
+              computed : '_computedLength(repos)',
               reflectToAttribute: true
             }
           }
         }
+
         constructor() {
           super();
         }
+
         ready() {
           super.ready();
-          console.log(this.user) ;
+          /**
+           * You can trigger a request explicitly by calling generateRequest on the element.
+           */
           this.$.requestRepos.generateRequest();
         }
 
-        handleResponse(data)  {
-            this.repos = data.detail.response;
+        _handleResponse(event)  {
+            const req = event.detail; // iron-request
+            console.log('status', req.status, req.statusText);
+            this.repos = event.detail.response;
         }
 
-        click() {
+        _handleErrort(request, erorr)  {
+          console.log(request,error);
+        }
+
+        _notify() {
+            /* this.setProperties({url: 'xxxxxxx', user: xxxx }); */
+            this.url =  "https://api.github.com/users/" + this.user + "/repos";
+        }
+
+        _fire() {
+            this.repos = [];
+            this.$.requestRepos.generateRequest();
+        }
+
+        _click() {
            console.log(this.$);
+        }
+
+        _computedLength(repos) {
+          return repos.length ;
         }
       }
 
