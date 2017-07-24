@@ -1,65 +1,90 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
 <link rel="import" href="icon-toggle.html">
-<link rel="import" href="shared-styles.html">
+<link rel="import" href="show-git-shared-styles.html">
 
 <dom-module id="show-git-repositories">
     <template>
         <!-- Styles MUST be inside template -->
-      <style include="shared-styles">
+      <style include="show-git-shared-styles">
         :host {
             display: block;
-            padding : 10px;
+            padding : 15px;
         }
 
-        .bold  {
-            font-size: 20px;
-            font-weight: bold;
-            color: grey;
-            margin-bottom: 0 0 30px 0;
-            display: block;
+        .command {
+          display: inline-flex;
+          width: 100%;
         }
 
-        input[type=text] {
-          width: 40%;
-          padding: 12px 15px;
-          margin: 8px 0;
-          font-size: 24px;
-          box-sizing: border-box;
-          border-width: 3px;
+        #filter {
+          margin-left: 20%;
         }
 
-        p  {
-          font-size: 16px;
-          margin-bottom: 5px;
-          margin-top: 5px;
+        .list {
+          margin-left : 20%;
+          margin-right: 20%;
         }
-        .strong {
-          font-weight: bold;
+
+        a {
+          display: block;
+          margin-bottom: 10px;
         }
-        .right {
-          padding-left: 30px;
+
+        li {
+          list-style: none;
+        }
+
+        .hidden {
+          display: none;
         }
 
       </style>
 
       <dom-bind>
-        <iron-input  id="input1" bind-value="{{user}}">
+      <div class="command list">
+        <iron-input  id="user" bind-value="{{user}}">
           <input type="text" value="{{user::input}}">
         </iron-input>
-        <iron-icon icon="search" on-click="_fire" ></iron-icon>
-        <p class= "bold"> Total number of [[user]] 's Github repositories: [[numberRepos]]</p>
+        <iron-icon class="icon" icon="search" on-click="_fire" ></iron-icon>
+        <iron-input  id="filter"  bind-value="{{filter}}">
+          <input type="text" placeholder= "filter name" value="{{filter::input}}">
+        </iron-input>
+      </div>
+      <div>
+        <p class= "card list"> <strong> The total number of [[user]] 's Github repositories is [[numberRepos]]</strong></p>
+      </div>
       </dom-bind>
 
+      <div class="list">
       <template is="dom-repeat" items="[[repos]]">
-          <div  class="card">
-               <p class="strong"> Name: {{item.name}} </p>
-               <p class="right"> Description: {{item.description}} </p>
-               <p class="right"><i> Url: {{item.git_url}}</i> </p>
-               <p class="right"> Created at: {{item.created_at}}   </p>
-          </div>
+          <ul  id="repos" class="card">
+               <li> <strong>Name: [[item.name]] </strong></li>
+               <li> Description: [[item.description]] </li>
+               <li><a href="[[item.html_url]]"> Url: [[item.html_url]] </a> <li>
+               <li> Created at: [[item.created_at]]  </li>
+               <li> Has pages: [[item.has_pages]]  </li>
+          </ul>
       </template>
+    </div>
 
+      <!--iron-list items="[[data]]" as="item" scroll-target="document">
+        <template>
+          <div>
+            <div class="item" tabindex$="[[tabIndex]]">
+              <iron-image class="avatar" sizing="contain" src="[[item.image]]"></iron-image>
+              <div class="pad">
+                <input type="text" name="value">
+                <div class="primary">[[item.name]] [[index]]</div>
+                <div> <a href="#">Link 1</a> <a href="#">Link 2</a> <a href="#">Link 3</a> <a href="#">Link 4</a> </div>
+                <div class="secondary">[[item.shortText]]</div>
+                <div class="secondary dim">[[item.longText]]</div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </iron-list-->
 
         <!-- url="https://api.github.com/users/burczu/repos" -->
         <!--
@@ -96,6 +121,7 @@
             repos: {
               type: Array,
               value: [],
+              notify: true,
               reflectToAttribute: true
             },
 
@@ -104,7 +130,15 @@
               value: "PaulMatencio",
               notify: true,
               reflectToAttribute: true,
-              observer: "_notify"
+              observer: "_user"
+            },
+
+            filter: {
+              type: String,
+              value: "",
+              notify: true,
+              reflectToAttribute: true,
+              observer: "_filter"
             },
 
             url: {
@@ -112,6 +146,13 @@
               value: function() {
                 return ("https://api.github.com/users/" + this.user + "/repos")
               },
+              reflectToAttribute: true
+            },
+
+            sortBy: {
+              type: String,
+              value: "",
+              notify: true,
               reflectToAttribute: true
             },
 
@@ -138,17 +179,42 @@
         _handleResponse(event)  {
             const req = event.detail; // iron-request
             console.log('status', req.status, req.statusText);
-            this.repos = event.detail.response;
-        }
+            if (req.status == 200 ) {
+              this.repos = event.detail.response;
+              console.log(this.repos);
+            }
+         }
 
         _handleErrort(request, erorr)  {
           console.log(request,error);
         }
 
-        _notify() {
+        /**  Obsever  of the user input element
+          *
+         */
+        _user() {
             /* this.setProperties({url: 'xxxxxxx', user: xxxx }); */
             this.url =  "https://api.github.com/users/" + this.user + "/repos";
         }
+
+        /**  Obsever  of the filter input element
+          *
+         */
+        _filter() {
+            var reposa = this.shadowRoot.querySelectorAll("#repos");
+            if (reposa == undefined) {return} ;
+            var filter = this.filter.toLowerCase();
+            reposa.forEach(function(repos,index)  {
+              // use array this.repos.name to filter
+              name = this.repos[index].name.toLowerCase() ;
+              console.log(name,filter);
+              if ( name.indexOf(filter) < 0 ) {
+                    repos.classList.add("hidden") ;
+              } else {
+                repos.classList.remove("hidden") ;
+              }
+            },this);
+         }
 
         _fire() {
             this.repos = [];
