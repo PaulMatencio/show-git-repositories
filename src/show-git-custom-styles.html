@@ -1,0 +1,36 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<dom-module id="show-git-custom-styles">
+  <!--style must be defined inside template -->
+  <template>
+    <custon-style>
+    <style>
+    /* Define a document-wide default—will not override a :host rule in  */
+      html {
+        --iron-icon-stroke-color: black;
+        --icon-toggle-outline-color: black;
+      }
+      /* Override the value specified in demo-element */
+      show-git-repositories {
+          --iron-icon-fill-color: white;
+          --iron-icon-stroke-color: gray;
+          --iron-icon-height: 48px;
+          --iron-icon-width: 48px;
+          --icon-toggle-pressed-color: blue;
+          --icon-toggle-color: gray;
+          --card-margin  : 15px;
+          --title-background-color: #BB5530;
+          --title-color: #fff;
+
+      }
+        /* This rule will apply to the body of this html! */
+      body {
+          --iron-icon-fill-color: blue;
+          --iron-icon-stroke-color: blue;
+          --iron-icon-height: 36px;
+          --iron-icon-width: 36px;
+          --icon-toggle-color: red;
+      }
+      </style>
+      <custon-style>
+  </template>
+<dom-module>

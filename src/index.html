@@ -12,41 +12,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
   <title>Show github repos</title>
   <!--
     Custom Elements and Shadow DOM are part of a set of web standards
     called Web Components. On browsers that don't natively support Web Components,
     you'll need to load a polyfill
   -->
-  <custon-style>
-    <!--style is="custom-style" include="work-pages-shared-styles">
-    </style-->
-    <style>
-    /* Define a document-wide default—will not override a :host rule in  */
-      html {
-        --iron-icon-stroke-color: black;
-        --icon-toggle-outline-color: black;
-      }
-      /* Override the value specified in demo-element */
-      show-git-repositories {
-          --iron-icon-fill-color: blue;
-          --iron-icon-stroke-color: gray;
-          --iron-icon-height: 36px;
-          --iron-icon-width: 36px;
-          --icon-toggle-pressed-color: blue;
-          --icon-toggle-color: gray;
+  <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+  <link rel="import" href="show-git-custom-styles.html">
 
-      }
-        /* This rule will apply to the body of this html! */
-      body {
-          --iron-icon-fill-color: blue;
-          --iron-icon-stroke-color: blue;
-          --iron-icon-height: 36px;
-          --iron-icon-width: 36px;
-          --icon-toggle-color: red;
-      }
-    </style>
+  <custom-style>
+    <style include="show-git-custom-styles"></style>
+    <!--style is="custom-style" include="iron-flex iron-flex-alignment"-->
+    <style  include="iron-flex iron-flex-alignment"></style>
   </custom-style>
+
 
   <style>
       body {
