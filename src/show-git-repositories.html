@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="icon-toggle.html">
 <link rel="import" href="show-git-shared-styles.html">
@@ -9,8 +10,9 @@
 <dom-module id="show-git-repositories">
     <template>
       <!-- Styles MUST be inside template -->
-      <style include="show-git-shared-styles">
+      <style include="show-git-shared-styles"></style>
 
+      <style>
         :host {
             display: block;
             padding : 15px;
@@ -19,6 +21,7 @@
         #filter {
           margin-left: 5%;
         }
+
         a {
           display: block;
         }
@@ -27,18 +30,22 @@
           display: none;
         }
 
-        #git {
-          margin-left : 20%;
+        .left {
+          width: calc(20% - var(--card-margin, 1px));
+          top: 5px;
+          font-size: 25px;
         }
 
-        .left {
-          width: calc(20% - var(--card-margin, 15px));
-          top: 5px;
-          font-weight: 30px;
+        .left[mobile] {
+          display: none;
         }
 
         .right {
           width: calc(80% - var(--card-margin, 15px));
+        }
+
+        .right[mobile] {
+          width:  calc(100% - var(--card-margin, 15px));
         }
 
         .name {
@@ -47,7 +54,7 @@
         }
 
         .bold {
-          font-size: 2.5vh;
+          font-size: 1.8vh;
         }
 
         .description {
@@ -59,7 +66,7 @@
         }
 
         .title {
-            font-size: 4vh;
+            font-size: 3vh;
             color: var(--title-color, #000);
         }
 
@@ -67,6 +74,7 @@
 
       <!-- import classes in an element -->
       <style include="iron-flex iron-flex-alignment"></style>
+
 
       <!--dom-bind-->
         <div class= "layout horizontal center-center title">
@@ -82,24 +90,27 @@
           </iron-input>
         </div>
 
+      <iron-media-query query="(max-width: 768px)" query-matches="{{wide}}"></iron-media-query>
+      <iron-media-query query="(min-width: 769px) and (max-width: 1600px)" query-matches="{{wide1}}"></iron-media-query>
+
       <div class="layout horizontal">
 
-        <div class="card left">
-          <p class="name bold"> [[user]] </p>
-          <p class="description">  # repositories: [[numberRepos]] </p>
-        </div>
-      <!--/dom-bind-->
+        <div class="card left" mobile$="[[wide]]">
+              <!--div class "left" mobile$="[[wide]]"-->
+              <p class="name bold"> [[user]] </p>
+              <p class="description">  # repositories: [[numberRepos]] </p>
 
-        <div  class="right layout horizontal center-center wrap">
+        </div>
+
+        <div  class="layout horizontal center-center wrap right" mobile$="[[wide]] ">
           <template is="dom-repeat" items="[[repos]]">
-            <div  id="repos" class="card layout-flex">
+            <div  id="repos" class="card layout-flex"  mobile$="[[wide]]" laptop$="[[wide1]]">
                <div class="name">[[item.name]]</div>
                <div class="description">[[item.description]]</div>
                <div><a href="[[item.html_url]]"> Git Url </a> </div>
                <div><strong>Created at:</strong> [[item.created_at]]</div>
                <dom-if if="[[item.has_pages]]">
                   <template>
-                    <!--div><strong>Has pages:</strong> [[item.has_pages]] </div-->
                     <div><a href="[[item.homepage]]"> Home Page </a> </div>
                   </template>
                </dom-if>
@@ -159,7 +170,7 @@
             filter: {
               type: String,
               value: "",
-              notify: true,
+              notify: false,
               reflectToAttribute: true,
               observer: "_filter"
             },
