@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
 <link rel="import" href="icon-toggle.html">
 <link rel="import" href="show-git-shared-styles.html">
 
@@ -93,6 +94,31 @@
       <iron-media-query query="(max-width: 768px)" query-matches="{{wide}}"></iron-media-query>
       <iron-media-query query="(min-width: 769px) and (max-width: 1600px)" query-matches="{{wide1}}"></iron-media-query>
 
+      <!-- remove on-response="_handleResponse" to be used with app-indexeddb-mirror-->
+
+      <iron-ajax
+            verbose
+            id="requestRepos"
+            url="[[url]]"
+            params='{"type":"all"}'
+            handle-as="json"
+            last-response="{{liveData}}"
+            on-response="_handleResponse"
+            lastError = "{{lastError}}"
+            on-error = "_handleError"
+            iron-ajax-error = "_handleError"
+            debounce-duration="300">
+      </iron-ajax>
+
+      <app-indexeddb-mirror
+        key="repos"
+        data="{{liveData}}"
+        persisted-data="{{persistedData}}">
+      </app-indexeddb-mirror>
+
+
+
+
       <div class="layout horizontal">
 
         <div class="card left" mobile$="[[wide]]">
@@ -103,7 +129,8 @@
         </div>
 
         <div  class="layout horizontal center-center wrap right" mobile$="[[wide]] ">
-          <template is="dom-repeat" items="[[repos]]">
+          <!--template is="dom-repeat" items="[[repos]]"     used with iron-ajax  on-response attribute-->
+          <template is="dom-repeat" items="[[persistedData]]">
             <div  id="repos" class="card layout-flex"  mobile$="[[wide]]" laptop$="[[wide1]]">
                <div class="name">[[item.name]]</div>
                <div class="description">[[item.description]]</div>
@@ -133,18 +160,6 @@
         on-response="_handleResponse"
         last-response= {{ajaxResponse}}
         -->
-      <iron-ajax
-            verbose
-            id="requestRepos"
-            url="[[url]]"
-            params='{"type":"all"}'
-            handle-as="json"
-            on-response="_handleResponse"
-            lastError = "{{lastError}}"
-            on-error = "_handleError"
-            iron-ajax-error = "_handleError"
-            debounce-duration="300">
-      </iron-ajax>
     </template>
 
     <script>
@@ -238,6 +253,7 @@
             reposa.forEach(function(repos,index)  {
               // We use the array this.repos.name to filter
               name = this.repos[index].name.toLowerCase() ;
+
               if ( name.indexOf(filter) < 0 ) {
                     repos.classList.add("hidden") ;
               } else {

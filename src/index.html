@@ -13,7 +13,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-  <title>Show github repos</title>
+  <title>Show github repositories</title>
+  <!--
+      If deploying to a non-root path, replace href="/" with the full path to the project root.
+      For example: href="/polymer-starter-kit/relative-path-example/"
+    -->
+  <base href="/src/">
   <!--
     Custom Elements and Shadow DOM are part of a set of web standards
     called Web Components. On browsers that don't natively support Web Components,
@@ -21,6 +26,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   -->
   <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
   <link rel="import" href="show-git-custom-styles.html">
+
+  <!--
+      If deploying to a non-root path, replace href="/" with the full path to the project root.
+      For example: href="/polymer-starter-kit/relative-path-example/"
+    -->
+  <!--base href="/"-->
 
   <custom-style>
     <style include="show-git-custom-styles"></style>
@@ -40,11 +51,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
 
   <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script>
+     // Load and register pre-caching Service Worker
+      const baseUrl = document.querySelector('base').href;
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register(baseUrl + 'service-worker.js');
+        });
+      }
+  </script>
   <link rel="import" href="show-git-repositories.html">
 </head>
 <body>
   <show-git-repositories> user="PaulMatencio"</show-git-repositories>
-  <script>
-  </script>
+
 </body>
 </html>

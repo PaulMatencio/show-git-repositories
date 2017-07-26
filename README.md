@@ -6,7 +6,7 @@
 
 ####  Functions
 
-Show git repositories of any specific user and filter the  result. The result
+Show git repositories of a user and filter the result . The result
 contain a  link to the  url of a repository and a link to its web page if
 it exists
 
@@ -17,6 +17,8 @@ it exists
   3. iron-icon
 	4. iron-ajax
 	5. iron-media-query
+	6. app-storage
+	7. app-indexeddb-mirror
 
 
 
